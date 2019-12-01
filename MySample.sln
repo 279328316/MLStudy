@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.61
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BinaryClassify", "BinaryClassify", "{6F85D753-0FD4-4597-88ED-C760E4F2E2C1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatureClassify", "BinaryClassify\StatureClassify\StatureClassify.csproj", "{CCE0335C-9CC2-44E5-B36E-3D3446756FEB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinaryClassification_TextFeaturize", "BinaryClassify\BinaryClassification_TextFeaturize\BinaryClassification_TextFeaturize.csproj", "{E086FDAF-E27C-4247-8CCB-987C33A481D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MultiClassify", "MultiClassify", "{20F77A14-2120-4A22-81BE-292C8075D862}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MulticlassClassification_Mnist", "MultiClassify\MulticlassClassification_Mnist\MulticlassClassification_Mnist.csproj", "{C10FFC24-7A23-41A4-BCF3-EE717223837C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MulticlassClassification_Mnist_Useful", "MultiClassify\MulticlassClassification_Mnist_Useful\MulticlassClassification_Mnist_Useful.csproj", "{DA4FA89D-72DF-464A-BE55-8E667C943BF2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCE0335C-9CC2-44E5-B36E-3D3446756FEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCE0335C-9CC2-44E5-B36E-3D3446756FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCE0335C-9CC2-44E5-B36E-3D3446756FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCE0335C-9CC2-44E5-B36E-3D3446756FEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E086FDAF-E27C-4247-8CCB-987C33A481D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E086FDAF-E27C-4247-8CCB-987C33A481D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E086FDAF-E27C-4247-8CCB-987C33A481D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E086FDAF-E27C-4247-8CCB-987C33A481D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C10FFC24-7A23-41A4-BCF3-EE717223837C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C10FFC24-7A23-41A4-BCF3-EE717223837C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C10FFC24-7A23-41A4-BCF3-EE717223837C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C10FFC24-7A23-41A4-BCF3-EE717223837C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA4FA89D-72DF-464A-BE55-8E667C943BF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA4FA89D-72DF-464A-BE55-8E667C943BF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA4FA89D-72DF-464A-BE55-8E667C943BF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA4FA89D-72DF-464A-BE55-8E667C943BF2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CCE0335C-9CC2-44E5-B36E-3D3446756FEB} = {6F85D753-0FD4-4597-88ED-C760E4F2E2C1}
+		{E086FDAF-E27C-4247-8CCB-987C33A481D1} = {6F85D753-0FD4-4597-88ED-C760E4F2E2C1}
+		{C10FFC24-7A23-41A4-BCF3-EE717223837C} = {20F77A14-2120-4A22-81BE-292C8075D862}
+		{DA4FA89D-72DF-464A-BE55-8E667C943BF2} = {20F77A14-2120-4A22-81BE-292C8075D862}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB2284BC-B3ED-4DC9-BCD6-33F413493091}
+	EndGlobalSection
+EndGlobal
