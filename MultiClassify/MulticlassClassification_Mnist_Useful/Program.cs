@@ -1,8 +1,12 @@
-﻿using Microsoft.ML;
+﻿using Jc.Core.Helper;
+using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using static Microsoft.ML.DataOperationsCatalog;
 
 namespace MulticlassClassification_Mnist_Useful
@@ -43,17 +47,18 @@ namespace MulticlassClassification_Mnist_Useful
             //训练
             //Estimator 评估    Transforms 变形,变换
             // STEP 2: 配置数据处理管道        
-            IEstimator<ITransformer> dataProcessPipeline = mlContext.Transforms.CustomMapping(new LoadImageConversion().GetMapping(), contractName: "LoadImageConversionAction")
+            IEstimator<ITransformer> dataProcessPipeline = 
+                mlContext.Transforms.CustomMapping(new LoadImageConversion().GetMapping(), contractName: "LoadImageConversionAction")
                .Append(mlContext.Transforms.Conversion.MapValueToKey("Label", "Number", keyOrdinality: ValueToKeyMappingEstimator.KeyOrdinality.ByValue))
                .Append(mlContext.Transforms.NormalizeMeanVariance(outputColumnName: "FeaturesNormalizedByMeanVar", inputColumnName: "ImagePixels"));
             //加载DebugConversion数据读取 用于显示进度
             //将Number转为输出Label
             //将 PixelValues + DebugFeature 组合为Features
 
-            //STEP 3: 配置训练算法
-            IEstimator<ITransformer> trainer = mlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy(labelColumnName: "Label", featureColumnName: "Features");
+            // STEP 3: 配置训练算法 (using a maximum entropy classification model trained with the L-BFGS method)
+            IEstimator<ITransformer> trainer = mlContext.MulticlassClassification.Trainers.LbfgsMaximumEntropy(labelColumnName: "Label", featureColumnName: "FeaturesNormalizedByMeanVar");
             IEstimator<ITransformer> trainingPipeline = dataProcessPipeline.Append(trainer)
-                .Append(mlContext.Transforms.Conversion.MapKeyToValue("Number", "Label"));
+                 .Append(mlContext.Transforms.Conversion.MapKeyToValue("PredictNumber", "Label"));
             //将输出Label转换为Number
 
             // STEP 4: 训练模型使其与数据集拟合
@@ -62,6 +67,7 @@ namespace MulticlassClassification_Mnist_Useful
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            LoadImageConversion.InitConversion(trainDataFolder, 0.9);
             ITransformer model = trainingPipeline.Fit(trainData);
 
             stopWatch.Stop();
@@ -72,13 +78,14 @@ namespace MulticlassClassification_Mnist_Useful
 
             // STEP 5:评估模型的准确性
             Console.WriteLine("===== Evaluating Model's accuracy with Test data =====");
+            LoadImageConversion.InitConversion(trainDataFolder, 0.1);
             IDataView predictions = model.Transform(testData);
-            MulticlassClassificationMetrics metrics = mlContext.MulticlassClassification.Evaluate(data: predictions, labelColumnName: "Number", scoreColumnName: "Score");
+            MulticlassClassificationMetrics metrics = mlContext.MulticlassClassification.Evaluate(data: predictions, labelColumnName: "Label", scoreColumnName: "Score");
             PrintMultiClassClassificationMetrics(trainer.ToString(), metrics);
             DebugData(mlContext, predictions);
 
             // STEP 6:保存模型              
-            //mlContext.ComponentCatalog.RegisterAssembly(typeof(DebugConversion).Assembly);
+            //mlContext.ComponentCatalog.RegisterAssembly(typeof(LoadImageConversion).Assembly);
             mlContext.Model.Save(model, trainData.Schema, modelPath);
             Console.WriteLine("The model is saved to {0}", modelPath);
 
@@ -93,7 +100,7 @@ namespace MulticlassClassification_Mnist_Useful
             MLContext mlContext = new MLContext();
 
             //加载变换模型
-            mlContext.ComponentCatalog.RegisterAssembly(typeof(DebugConversion).Assembly);
+            mlContext.ComponentCatalog.RegisterAssembly(typeof(LoadImageConversion).Assembly);
             ITransformer model = mlContext.Model.Load(modelPath, out var inputSchema);
 
             //创建预测引擎
@@ -101,21 +108,31 @@ namespace MulticlassClassification_Mnist_Useful
 
             Console.ForegroundColor = ConsoleColor.Red;
 
-            //num 1
-            InputData MNIST1 = new InputData()
+            Console.WriteLine("===== Test =====");
+            DirectoryInfo TestFolder = new DirectoryInfo(Path.Combine(assetsFolder, "test"));
+            int count = 0;
+            int success = 0;
+            foreach (var image in TestFolder.GetFiles())
             {
-                PixelValues = new float[] { 0, 0, 0, 0, 14, 13, 1, 0, 0, 0, 0, 5, 16, 16, 2, 0, 0, 0, 0, 14, 16, 12, 0, 0, 0, 1, 10, 16, 16, 12, 0, 0, 0, 3, 12, 14, 16, 9, 0, 0, 0, 0, 0, 5, 16, 15, 0, 0, 0, 0, 0, 4, 16, 14, 0, 0, 0, 0, 0, 1, 13, 16, 1, 0 }
-            };
-            OutPutData resultprediction1 = predictionEngine.Predict(MNIST1);
-            resultprediction1.PrintToConsole();
+                count++;
 
-            //num 7
-            InputData MNIST2 = new InputData()
-            {
-                PixelValues = new float[] { 0, 0, 1, 8, 15, 10, 0, 0, 0, 3, 13, 15, 14, 14, 0, 0, 0, 5, 10, 0, 10, 12, 0, 0, 0, 0, 3, 5, 15, 10, 2, 0, 0, 0, 16, 16, 16, 16, 12, 0, 0, 1, 8, 12, 14, 8, 3, 0, 0, 0, 0, 10, 13, 0, 0, 0, 0, 0, 0, 11, 9, 0, 0, 0 }
-            };
-            OutPutData resultprediction2 = predictionEngine.Predict(MNIST2);
-            resultprediction2.PrintToConsole();
+                InputData img = new InputData()
+                {
+                    FileName = image.Name
+                };
+                OutPutData result = predictionEngine.Predict(img);
+
+                if (int.Parse(image.Name.Substring(0, 1)) == result.GetPredictResult())
+                {
+                    success++;
+                }
+
+                if (count % 100 == 1)
+                {
+                    Console.WriteLine($"Current Source={img.FileName},PredictResult={result.GetPredictResult()},Success rate={success * 100 / count}%");
+                }
+            }
+
             Console.ResetColor();
         }
 
@@ -145,28 +162,57 @@ namespace MulticlassClassification_Mnist_Useful
 
     class InputData
     {
+        [LoadColumn(0)]
+        public string FileName;
+
+        [LoadColumn(1)]
+        public string Number;
+
+        [LoadColumn(1)]
         public float Serial;
-        [VectorType(64)]
-        public float[] PixelValues;
-        public float Number;
     }
 
     class OutPutData : InputData
     {
+        public string PredictNumber;
+        public string ImagePath;
+        public float[] ImagePixels;
         public float[] Score;
+        public int GetPredictResult()
+        {
+            float max = 0;
+            int index = 0;
+            for (int i = 0; i < Score.Length; i++)
+            {
+                if (Score[i] > max)
+                {
+                    max = Score[i];
+                    index = i;
+                }
+            }
+            return index;
+        }
 
         public void PrintToConsole()
         {
-            Console.WriteLine($"Predicted probability:     zero:  {Score[0]:0.####}");
-            Console.WriteLine($"                           One :  {Score[1]:0.####}");
-            Console.WriteLine($"                           two:   {Score[2]:0.####}");
-            Console.WriteLine($"                           three: {Score[3]:0.####}");
-            Console.WriteLine($"                           four:  {Score[4]:0.####}");
-            Console.WriteLine($"                           five:  {Score[5]:0.####}");
-            Console.WriteLine($"                           six:   {Score[6]:0.####}");
-            Console.WriteLine($"                           seven: {Score[7]:0.####}");
-            Console.WriteLine($"                           eight: {Score[8]:0.####}");
-            Console.WriteLine($"                           nine:  {Score[9]:0.####}");
+            Console.WriteLine($"ImagePath={ImagePath},Number={Number},PredictNumber={PredictNumber}");
+
+            int PredictResult = GetPredictResult();
+            Console.WriteLine($"PredictResult={PredictResult}");
+
+            Console.Write($"ImagePixels.Length={ImagePixels.Length},ImagePixels=[");
+            for (int i = 0; i < ImagePixels.Length; i++)
+            {
+                Console.Write($"{ImagePixels[i]},");
+            }
+            Console.WriteLine("]");
+
+            Console.Write($"Score.Length={Score.Length},Score=[");
+            for (int i = 0; i < Score.Length; i++)
+            {
+                Console.Write($"{Score[i]},");
+            }
+            Console.WriteLine("]");
         }
     }
 }

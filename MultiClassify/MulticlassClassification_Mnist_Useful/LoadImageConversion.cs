@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace MulticlassClassification_Mnist_Useful
 {
@@ -24,13 +25,30 @@ namespace MulticlassClassification_Mnist_Useful
     [CustomMappingFactoryAttribute("LoadImageConversionAction")]
     public class LoadImageConversion : CustomMappingFactory<LoadImageConversionInput, LoadImageConversionOutput>
     {
-        static long Count = 0;
-        static long TotalCount = 0;
-        static readonly string TrainDataFolder = @"D:\StepByStep\Blogs\ML_Assets\MNIST\train";
+        static long count = 0;
+        static long totalCount = 0;
+        static long percent = 0;
+        static string trainDataFolder = @"D:\StepByStep\Blogs\ML_Assets\MNIST\train";
 
-        public void CustomAction(LoadImageConversionInput input, LoadImageConversionOutput output)
+        public static void InitConversion(string dataFolder,double fraction = 1.0d, string searchPattern = "", SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
-            string ImagePath = Path.Combine(TrainDataFolder, input.FileName);
+            if (Directory.Exists(dataFolder))
+            {
+                trainDataFolder = dataFolder;
+                long fileAmount = Directory.GetFiles(trainDataFolder, searchPattern, searchOption).Length;
+                totalCount = (long)(fileAmount * fraction);
+                count = 0;
+                percent = 0;
+            }
+            else
+            {
+                throw new Exception("初始化的文件夹不存在");
+            }
+        }
+
+        private void CustomAction(LoadImageConversionInput input, LoadImageConversionOutput output)
+        {
+            string ImagePath = Path.Combine(trainDataFolder, input.FileName);
             output.ImagePath = ImagePath;
 
             Bitmap bmp = Image.FromFile(ImagePath) as Bitmap;
@@ -45,12 +63,17 @@ namespace MulticlassClassification_Mnist_Useful
                 }
             bmp.Dispose();
 
-            Count++;
-            if (Count / 10000 > TotalCount)
+            count++;
+            if (count % 1000 == 0)
             {
-                TotalCount = Count / 10000;
-                Console.WriteLine($"LoadImageConversion.CustomAction's debug info.TotalCount={TotalCount}0000 ");
+                Console.Write($"LoadedCount={count}");
+                if (totalCount > 0)
+                {
+                    percent = count * 100 / totalCount;
+                    Console.WriteLine($"    Progress : {percent}%");
+                }
             }
+            Thread.Sleep(1);
         }
 
         public override Action<LoadImageConversionInput, LoadImageConversionOutput> GetMapping()
