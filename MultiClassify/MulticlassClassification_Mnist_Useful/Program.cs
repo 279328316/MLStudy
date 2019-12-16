@@ -67,7 +67,8 @@ namespace MulticlassClassification_Mnist_Useful
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            LoadImageConversion.InitConversion(trainDataFolder, 0.9);
+            LogHelper.WriteAppLog("==================训练====================");
+            LoadImageConversion.InitConversion(trainDataFolder);
             ITransformer model = trainingPipeline.Fit(trainData);
 
             stopWatch.Stop();
@@ -75,10 +76,10 @@ namespace MulticlassClassification_Mnist_Useful
             #endregion
 
             #region 评估
-
+            LogHelper.WriteAppLog("==================Evaluating====================");
             // STEP 5:评估模型的准确性
             Console.WriteLine("===== Evaluating Model's accuracy with Test data =====");
-            LoadImageConversion.InitConversion(trainDataFolder, 0.1);
+            LoadImageConversion.InitConversion(trainDataFolder);
             IDataView predictions = model.Transform(testData);
             MulticlassClassificationMetrics metrics = mlContext.MulticlassClassification.Evaluate(data: predictions, labelColumnName: "Label", scoreColumnName: "Score");
             PrintMultiClassClassificationMetrics(trainer.ToString(), metrics);
@@ -99,6 +100,7 @@ namespace MulticlassClassification_Mnist_Useful
         {
             MLContext mlContext = new MLContext();
 
+            
             //加载变换模型
             mlContext.ComponentCatalog.RegisterAssembly(typeof(LoadImageConversion).Assembly);
             ITransformer model = mlContext.Model.Load(modelPath, out var inputSchema);
@@ -110,6 +112,10 @@ namespace MulticlassClassification_Mnist_Useful
 
             Console.WriteLine("===== Test =====");
             DirectoryInfo TestFolder = new DirectoryInfo(Path.Combine(assetsFolder, "test"));
+
+            LogHelper.WriteAppLog("==================Predict====================");
+            LoadImageConversion.InitConversion(TestFolder.FullName);
+
             int count = 0;
             int success = 0;
             foreach (var image in TestFolder.GetFiles())

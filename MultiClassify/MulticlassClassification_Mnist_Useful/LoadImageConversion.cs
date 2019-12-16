@@ -1,4 +1,5 @@
-﻿using Microsoft.ML.Data;
+﻿using Jc.Core.Helper;
+using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,9 @@ namespace MulticlassClassification_Mnist_Useful
     [CustomMappingFactoryAttribute("LoadImageConversionAction")]
     public class LoadImageConversion : CustomMappingFactory<LoadImageConversionInput, LoadImageConversionOutput>
     {
-        static long count = 0;
-        static long totalCount = 0;
-        static long percent = 0;
+        volatile static int count = 0;
+        static int totalCount = 0;
+        static int percent = 0;
         static string trainDataFolder = @"D:\StepByStep\Blogs\ML_Assets\MNIST\train";
 
         public static void InitConversion(string dataFolder,double fraction = 1.0d, string searchPattern = "", SearchOption searchOption = SearchOption.TopDirectoryOnly)
@@ -35,8 +36,8 @@ namespace MulticlassClassification_Mnist_Useful
             if (Directory.Exists(dataFolder))
             {
                 trainDataFolder = dataFolder;
-                long fileAmount = Directory.GetFiles(trainDataFolder, searchPattern, searchOption).Length;
-                totalCount = (long)(fileAmount * fraction);
+                int fileAmount = Directory.GetFiles(trainDataFolder, searchPattern, searchOption).Length;
+                totalCount = (int)(fileAmount);
                 count = 0;
                 percent = 0;
             }
@@ -50,7 +51,6 @@ namespace MulticlassClassification_Mnist_Useful
         {
             string ImagePath = Path.Combine(trainDataFolder, input.FileName);
             output.ImagePath = ImagePath;
-
             Bitmap bmp = Image.FromFile(ImagePath) as Bitmap;
 
             output.ImagePixels = new float[400];
@@ -64,6 +64,7 @@ namespace MulticlassClassification_Mnist_Useful
             bmp.Dispose();
 
             count++;
+            LogHelper.WriteAppLog($"{count} {ImagePath}");
             if (count % 1000 == 0)
             {
                 Console.Write($"LoadedCount={count}");
@@ -73,7 +74,7 @@ namespace MulticlassClassification_Mnist_Useful
                     Console.WriteLine($"    Progress : {percent}%");
                 }
             }
-            Thread.Sleep(1);
+            Thread.Sleep(10);
         }
 
         public override Action<LoadImageConversionInput, LoadImageConversionOutput> GetMapping()
