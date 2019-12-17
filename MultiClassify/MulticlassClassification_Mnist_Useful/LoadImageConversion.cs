@@ -1,4 +1,5 @@
 ﻿using Jc.Core.Helper;
+using Jc.Nice.Dto;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
 using System;
@@ -64,6 +65,13 @@ namespace MulticlassClassification_Mnist_Useful
             bmp.Dispose();
 
             count++;
+            TrainDataDto dto = new TrainDataDto() {
+                DirName = trainDataFolder,
+                Name = input.FileName,
+                Count = count,
+                AddDate = DateTime.Now
+            };
+            Dbc.Db.Set(dto);
             LogHelper.WriteAppLog($"{count} {ImagePath}");
             if (count % 1000 == 0)
             {
@@ -74,7 +82,6 @@ namespace MulticlassClassification_Mnist_Useful
                     Console.WriteLine($"    Progress : {percent}%");
                 }
             }
-            Thread.Sleep(10);
         }
 
         public override Action<LoadImageConversionInput, LoadImageConversionOutput> GetMapping()
