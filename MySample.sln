@@ -13,7 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MultiClassify", "MultiClass
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MulticlassClassification_Mnist", "MultiClassify\MulticlassClassification_Mnist\MulticlassClassification_Mnist.csproj", "{C10FFC24-7A23-41A4-BCF3-EE717223837C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MulticlassClassification_Mnist_Useful", "MultiClassify\MulticlassClassification_Mnist_Useful\MulticlassClassification_Mnist_Useful.csproj", "{DA4FA89D-72DF-464A-BE55-8E667C943BF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MulticlassClassification_Mnist_Useful", "MultiClassify\MulticlassClassification_Mnist_Useful\MulticlassClassification_Mnist_Useful.csproj", "{DA4FA89D-72DF-464A-BE55-8E667C943BF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TensorFlow_ImageClassification", "MultiClassify\TensorFlow_ImageClassification\TensorFlow_ImageClassification.csproj", "{91B599A6-3D40-4F9F-883F-CD8DCAD2197A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{DA4FA89D-72DF-464A-BE55-8E667C943BF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA4FA89D-72DF-464A-BE55-8E667C943BF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA4FA89D-72DF-464A-BE55-8E667C943BF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91B599A6-3D40-4F9F-883F-CD8DCAD2197A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91B599A6-3D40-4F9F-883F-CD8DCAD2197A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91B599A6-3D40-4F9F-883F-CD8DCAD2197A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91B599A6-3D40-4F9F-883F-CD8DCAD2197A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{E086FDAF-E27C-4247-8CCB-987C33A481D1} = {6F85D753-0FD4-4597-88ED-C760E4F2E2C1}
 		{C10FFC24-7A23-41A4-BCF3-EE717223837C} = {20F77A14-2120-4A22-81BE-292C8075D862}
 		{DA4FA89D-72DF-464A-BE55-8E667C943BF2} = {20F77A14-2120-4A22-81BE-292C8075D862}
+		{91B599A6-3D40-4F9F-883F-CD8DCAD2197A} = {20F77A14-2120-4A22-81BE-292C8075D862}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB2284BC-B3ED-4DC9-BCD6-33F413493091}
